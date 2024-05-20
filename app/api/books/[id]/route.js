@@ -1,14 +1,10 @@
-import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
-import Book from '../../../../models/Book';
+const { NextResponse } = require('next/server');
+const mongoose = require('mongoose');
+const Book = require('../../../../models/Book');
+const connectDB = require('../../../../utils/connectDB');
+const authMiddleware = require('../../../middleware/auth');
 
-const connectDB = async () => {
-    if (mongoose.connections[0].readyState) return;
-    await mongoose.connect(process.env.MONGODB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    });
-};
+require('dotenv').config({ path: '.env.local' });
 
 export async function GET(request, { params }) {
     await connectDB();
@@ -18,12 +14,32 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
     await connectDB();
-    const { title, author, genre, yearPublished } = await request.json();
-    const book = await Book.findByIdAndUpdate(params.id, { title, author, genre, yearPublished }, { new: true });
-    return NextResponse.json(book);
+
+    const authResponse = authMiddleware(request);
+    if (authResponse.status === 401) return authResponse;
+
+    try {
+        const { title, author, genre, yearPublished } = await request.json();
+        const book = await Book.findByIdAndUpdate(
+            params.id,
+            { title, author, genre, yearPublished },
+            { new: true }
+        );
+
+        if (!book) {
+            return NextResponse.json({ message: 'Book not found' }, { status: 404 });
+        }
+
+        return NextResponse.json(book);
+    } catch (error) {
+        console.error('Error updating book:', error);
+        return NextResponse.json({ message: 'Server error' }, { status: 500 });
+    }
 }
 
 export async function DELETE(request, { params }) {
+    const authResponse = authMiddleware(request);
+    if (authResponse.status === 401) return authResponse;
     await connectDB();
     await Book.findByIdAndDelete(params.id);
     return NextResponse.json({ message: 'Book deleted' });

@@ -5,6 +5,7 @@ import BookForm from './components/BookForm';
 import BookList from './components/BookList';
 import Modal from './components/Modal';
 import Pagination from './components/Pagination';
+import Login from './components/Login'; // Import Login component
 
 const genres = [
   'Fiction',
@@ -23,10 +24,19 @@ const Home = () => {
   const [books, setBooks] = useState([]);
   const [editingBook, setEditingBook] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [genreFilter, setGenreFilter] = useState('');
+  const [token, setToken] = useState(''); // Manage token state
+  const [action, setAction] = useState(null); // Track the action type (edit or delete)
+  const [actionBook, setActionBook] = useState(null); // Track the book for the action
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem('token') || '';
+    setToken(savedToken);
+  }, []);
 
   const fetchBooks = async (page = 1) => {
     try {
@@ -51,8 +61,33 @@ const Home = () => {
   };
 
   const handleEditBook = (book) => {
-    setEditingBook(book);
-    setIsModalOpen(true);
+    if (token) {
+      setEditingBook(book);
+      setIsModalOpen(true);
+    } else {
+      setIsLoginModalOpen(true);
+      setAction('edit');
+      setActionBook(book);
+    }
+  };
+
+  const handleDeleteBook = async (book) => {
+    if (token) {
+      try {
+        await axios.delete(`/api/books/${book._id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        fetchBooks();
+      } catch (error) {
+        console.error('Error deleting book:', error);
+      }
+    } else {
+      setIsLoginModalOpen(true);
+      setAction('delete');
+      setActionBook(book);
+    }
   };
 
   const handlePageChange = (page) => {
@@ -65,6 +100,20 @@ const Home = () => {
 
   const handleGenreFilterChange = (e) => {
     setGenreFilter(e.target.value);
+  };
+
+  const handleLoginSuccess = (token) => {
+    setToken(token);
+    localStorage.setItem('token', token);
+    setIsLoginModalOpen(false);
+    if (action === 'edit') {
+      setEditingBook(actionBook);
+      setIsModalOpen(true);
+    } else if (action === 'delete') {
+      handleDeleteBook(actionBook);
+    }
+    setAction(null);
+    setActionBook(null);
   };
 
   return (
@@ -97,7 +146,7 @@ const Home = () => {
           ))}
         </select>
       </div>
-      <BookList books={books} onEdit={handleEditBook} fetchBooks={fetchBooks} />
+      <BookList books={books} onEdit={handleEditBook} onDelete={handleDeleteBook} fetchBooks={fetchBooks} />
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
@@ -106,6 +155,11 @@ const Home = () => {
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>
           <BookForm book={editingBook} onSubmit={() => setIsModalOpen(false)} fetchBooks={fetchBooks} />
+        </Modal>
+      )}
+      {isLoginModalOpen && (
+        <Modal onClose={() => setIsLoginModalOpen(false)}>
+          <Login onLoginSuccess={handleLoginSuccess} />
         </Modal>
       )}
     </div>

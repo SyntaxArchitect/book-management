@@ -1,152 +1,173 @@
-Certainly! Here's the full README file in Markdown format:
-
----
-
 # Book Management Application
 
-## Overview
+A web application for managing books. Users can view, add, edit, and delete books. Authentication is required for editing and deleting books.
 
-This is a full-stack Book Management application built with Next.js, React, and MongoDB. The application allows users to perform CRUD (Create, Read, Update, Delete) operations on a list of books. It includes features such as searching for books, filtering by genre, pagination, and a modal form for adding and editing books.
+## Live Demo
+
+Check out the live demo of the application: [Book Management Live](https://book-management-red.vercel.app/)
+
+## GitHub Repository
+
+You can find the source code here: [GitHub Repository](https://github.com/codeArtCreator/book-management.git)
 
 ## Features
 
-- **Book List**: View a list of books with details like title, author, genre, and year published.
-- **Add/Edit Book**: Add new books or edit existing ones using a modal form.
-- **Delete Book**: Delete books from the list.
-- **Search**: Search for books by title.
-- **Filter by Genre**: Filter books based on genre.
-- **Pagination**: Navigate through pages of books.
-- **Responsive Design**: The application is responsive and works well on different screen sizes.
+- View a list of books
+- Search books by title
+- Filter books by genre
+- Add new books
+- Edit existing books
+- Delete books
+- User authentication for editing and deleting books
 
-## Technologies Used
+## Tech Stack
 
-- **Frontend**: Next.js, React, Tailwind CSS
-- **Backend**: Next.js API Routes, Express.js
-- **Database**: MongoDB
-- **HTTP Client**: Axios
+- Next.js
+- React
+- MongoDB
+- Mongoose
+- Axios
+- JWT (JSON Web Tokens) for authentication
 
-## Installation
+## Getting Started
 
 ### Prerequisites
 
-- Node.js (v14 or above)
-- npm or yarn
-- MongoDB instance (local or cloud)
+- Node.js installed on your local machine
+- MongoDB Atlas account or a local MongoDB instance
 
-### Steps
+### Installation
 
-1. **Clone the repository:**
+1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/book-management-app.git
-   cd book-management-app
+   git clone https://github.com/codeArtCreator/book-management.git
+   cd book-management
    ```
 
-2. **Install dependencies:**
+2. Install dependencies:
 
    ```bash
    npm install
    ```
 
-   or
+3. Create a `.env.local` file in the root directory and add your MongoDB connection string and JWT secret:
+
+   ```plaintext
+   MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<dbname>?retryWrites=true&w=majority
+   JWT_SECRET=your_jwt_secret_key
+   ```
+
+4. Set up the initial admin user by running the setup script:
 
    ```bash
-   yarn install
+   npm run setup-admin
    ```
 
-3. **Set up environment variables:**
+   This will create an admin user with the following credentials:
 
-   Create a `.env.local` file in the root directory and add your MongoDB URI:
+   - **Username:** admin
+   - **Password:** admin
 
-   ```env
-   MONGODB_URI=your_mongodb_uri
+5. Insert sample books into the database by running the script:
+
+   ```bash
+   npm run insert-sample-books
    ```
 
-4. **Run the application:**
+### Running the Application
+
+1. Start the development server:
 
    ```bash
    npm run dev
    ```
 
-   or
+   The application will be available at `http://localhost:3000`.
 
-   ```bash
-   yarn dev
-   ```
+### Authentication
 
-   The application will be running at `http://localhost:3000`.
-
-## Project Structure
-
-- `app/api/books/[id]/route.js`: API route for handling single book operations (GET, PUT, DELETE).
-- `app/api/books/route.js`: API route for handling book collection operations (GET, POST).
-- `app/layout.js`: Custom layout component for the application.
-- `app/page.js`: Main page component rendering the book management interface.
-- `components/BookForm.js`: Component for the book form used in the modal.
-- `components/BookList.js`: Component for rendering the list of books.
-- `components/Modal.js`: Modal component for the form.
-- `components/Pagination.js`: Component for pagination controls.
-- `models/Book.js`: Mongoose model for the Book schema.
+- Login is required to edit or delete books.
+- Use the default admin credentials to log in:
+  - **Username:** admin
+  - **Password:** admin
 
 ## API Endpoints
 
-### Get All Books
+### GET `/api/books`
 
-- **URL**: `/api/books`
-- **Method**: GET
-- **Query Params**:
-  - `searchQuery` (optional): String to search for books by title.
-  - `genre` (optional): String to filter books by genre.
-  - `page` (optional): Page number for pagination.
-- **Response**: JSON object with books, currentPage, and totalPages.
+Retrieve a list of books.
 
-### Get Single Book
+### POST `/api/books`
 
-- **URL**: `/api/books/[id]`
-- **Method**: GET
-- **Response**: JSON object with the book details.
+Add a new book. Requires authentication.
 
-### Add New Book
+### PUT `/api/books/:id`
 
-- **URL**: `/api/books`
-- **Method**: POST
-- **Body**: JSON object with title, author, genre, and yearPublished.
-- **Response**: JSON object with the created book.
+Update an existing book. Requires authentication.
 
-### Update Book
+### DELETE `/api/books/:id`
 
-- **URL**: `/api/books/[id]`
-- **Method**: PUT
-- **Body**: JSON object with title, author, genre, and yearPublished.
-- **Response**: JSON object with the updated book.
+Delete a book. Requires authentication.
 
-### Delete Book
+## Components
 
-- **URL**: `/api/books/[id]`
-- **Method**: DELETE
-- **Response**: JSON object with a message indicating successful deletion.
+### `components/BookForm.js`
 
-## How to Use
+Form for adding and editing books.
 
-1. **View Books**: The main page displays a list of books with options to search, filter, and paginate through the list.
-2. **Add a Book**: Click on the "Add New Book" button to open the modal form. Fill in the details and submit to add a new book.
-3. **Edit a Book**: Click the "Edit" button next to a book to open the modal form with the book's details. Modify the details and submit to update the book.
-4. **Delete a Book**: Click the "Delete" button next to a book to remove it from the list.
-5. **Search and Filter**: Use the search input to find books by title and the genre dropdown to filter books by genre.
-6. **Pagination**: Navigate through the pages using the pagination controls at the bottom of the list.
+### `components/BookList.js`
 
-## License
+Displays a list of books with options to edit or delete.
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+### `components/Modal.js`
+
+Reusable modal component.
+
+### `components/Login.js`
+
+Login form for user authentication.
+
+## Middleware
+
+### `middleware/auth.js`
+
+Middleware for handling JWT authentication.
+
+## Database
+
+### `models/Book.js`
+
+Mongoose schema and model for books.
+
+### `models/User.js`
+
+Mongoose schema and model for users.
+
+## Utils
+
+### `utils/connectDB.js`
+
+Utility for connecting to MongoDB.
+
+## Scripts
+
+### `scripts/setupAdmin.js`
+
+Script to set up the initial admin user.
+
+### `scripts/insertSampleBooks.js`
+
+Script to insert initial sample books into the database.
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
+1. Fork the repository.
+2. Create a new branch: `git checkout -b feature-name`
+3. Make your changes and commit them: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin feature-name`
+5. Open a pull request.
 
-## Contact
+## License
 
-For any questions or suggestions, feel free to contact me at rakeshpr369@gmail.com.
-
-```
-
-```
+This project is licensed under the MIT License.

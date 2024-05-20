@@ -14,14 +14,20 @@ const BookForm = ({ fetchBooks, onSubmit, book }) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+
             if (book) {
-                await axios.put(`/api/books/${book._id}`, formData);
+                await axios.put(`/api/books/${book._id}`, formData, config);
             } else {
-                await axios.post('/api/books', formData);
+                await axios.post('/api/books', formData, config);
             }
             fetchBooks();
             onSubmit();
@@ -29,6 +35,20 @@ const BookForm = ({ fetchBooks, onSubmit, book }) => {
             console.error('Error submitting form', error);
         }
     };
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         if (book) {
+    //             await axios.put(`/api/books/${book._id}`, formData);
+    //         } else {
+    //             await axios.post('/api/books', formData);
+    //         }
+    //         fetchBooks();
+    //         onSubmit();
+    //     } catch (error) {
+    //         console.error('Error submitting form', error);
+    //     }
+    // };
 
     return (
         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 max-w-lg mx-auto mt-8">
