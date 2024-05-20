@@ -5,7 +5,7 @@ const BookList = ({ onEdit, fetchBooks, books }) => {
     const handleDelete = async (id) => {
         try {
             await axios.delete(`/api/books/${id}`);
-            fetchBooks(); // Fetch updated list of books
+            fetchBooks();
         } catch (error) {
             console.error(error);
         }
