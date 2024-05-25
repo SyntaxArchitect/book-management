@@ -7,6 +7,8 @@ import Modal from './components/Modal';
 import Pagination from './components/Pagination';
 import Login from './components/Login'; // Import Login component
 
+export const runtime = 'edge';
+
 const genres = [
   'Fiction',
   'Non-Fiction',
