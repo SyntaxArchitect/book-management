@@ -3,6 +3,8 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const runtime = 'edge'
+
 export const metadata = {
   title: "Book Management App - Simplify Your Reading Collection",
   description: "Effortlessly manage your book collection with our user-friendly book management app. Add, edit, and delete books, search by title, filter by genre, and ensure your library is always organized. Experience seamless book management with enhanced security through user authentication.",
