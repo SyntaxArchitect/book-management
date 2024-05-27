@@ -5,9 +5,7 @@ import BookForm from './components/BookForm';
 import BookList from './components/BookList';
 import Modal from './components/Modal';
 import Pagination from './components/Pagination';
-import Login from './components/Login'; // Import Login component
-
-export const runtime = 'edge';
+import Login from './components/Login';
 
 const genres = [
   'Fiction',
